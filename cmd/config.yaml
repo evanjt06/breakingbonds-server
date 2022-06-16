@@ -1,0 +1,95 @@
+csrf:
+  csrf_secret: ""
+html_templates:
+  template_base_dir: ""
+  template_definitions: []
+jwt_auth:
+  jwt_cookie_domain: ""
+  jwt_cookie_http_only: true
+  jwt_cookie_max_age_days: 70
+  jwt_cookie_name: ""
+  jwt_cookie_same_site: default
+  jwt_disable_abort: false
+  jwt_identity_key: id
+  jwt_login_data_binding: BindJson
+  jwt_login_route_path: /login
+  jwt_logout_route_path: /logout
+  jwt_private_key: HelloWorld
+  jwt_public_key: HelloWorld1
+  jwt_realm: BreakingBonds
+  jwt_refresh_token_route_path: /refreshtoken
+  jwt_refresh_valid_minutes: 129600
+  jwt_secure_cookie: true
+  jwt_send_authorization: false
+  jwt_send_cookie: false
+  jwt_sign_algorithm: H256
+  jwt_sign_secret: BreakingBonds
+  jwt_token_head_name: Bearer
+  jwt_token_lookup: header:Authorization
+  jwt_token_valid_minutes: 20160
+logging:
+  custom_logging: false
+  custom_logging_to_console: false
+recovery:
+  custom_recovery: false
+routes:
+  # optional, web server routes level middleware configurations, default = empty list
+  - route_group_name: base                    # base = web server root folder; other values = web server route group name
+    jwt_auth_secured: false                   # indicates if this route group is jwt auth secured (assume jwt auth is setup)
+    max_concurrent_request_limit: 100         # max hit rate limit, 0 = turn off
+    per_client_ip_qps: 100                    # per client ip qps rate limit, 0 = turn off
+    per_client_ip_burst: 100
+    per_client_ip_ttl_minutes: 60
+    gzip_compression_type: ""                 # gzip compression services, values: (default, best-speed, best-compression) blank = turn off
+    gzip_exclude_extensions:
+    gzip_exclude_paths:
+    gzip_exclude_paths_regex:
+    cors_allow_all_origins: false              # cors protection services, true = turn off
+    cors_allow_origins: # list of cors origins allowed
+      - http://localhost:3000
+    cors_allow_methods: # list of cors methods allowed
+    cors_allow_headers: # list of cors headers allowed
+      - Authorization
+      - authorization
+      - content-type
+    cors_allow_credentials: true
+    cors_allow_wild_card: true
+    cors_allow_browser_extensions: true
+    cors_allow_web_sockets: true
+    cors_allow_files: true
+    cors_max_age_minutes: 5
+  - route_group_name: auth                    # base = web server root folder; other values = web server route group name
+    jwt_auth_secured: true                   # indicates if this route group is jwt auth secured (assume jwt auth is setup)
+    max_concurrent_request_limit: 100         # max hit rate limit, 0 = turn off
+    per_client_ip_qps: 100                    # per client ip qps rate limit, 0 = turn off
+    per_client_ip_burst: 100
+    per_client_ip_ttl_minutes: 60
+    gzip_compression_type: ""                 # gzip compression services, values: (default, best-speed, best-compression) blank = turn off
+    gzip_exclude_extensions:
+    gzip_exclude_paths:
+    gzip_exclude_paths_regex:
+    cors_allow_all_origins: false              # cors protection services, true = turn off
+    cors_allow_origins: # list of cors origins allowed
+      - http://localhost:3000
+    cors_allow_methods: # list of cors methods allowed
+    cors_allow_headers: # list of cors headers allowed
+      - Authorization
+      - authorization
+    cors_allow_credentials: true
+    cors_allow_wild_card: true
+    cors_allow_browser_extensions: true
+    cors_allow_web_sockets: true
+    cors_allow_files: true
+    cors_max_age_minutes: 5
+session:
+  redis_host: ""
+  redis_max_idle_connections: 10
+  session_names: []
+  session_secret: ""
+web_server:
+  google_recaptcha_secret: ""
+  ws_debug: false
+  ws_name: webserver
+  ws_port: 4000
+  ws_server_key: ""
+  ws_server_pem: ""
