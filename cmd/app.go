@@ -153,10 +153,33 @@ func main() {
 		},
 		"auth": {
 			Routes: []*ginw.Route{
+
 				{
-					RelativePath: "/user",
+					RelativePath: "/submitQuiz/:number",
 					Method:       ginhttpmethod.POST,
 					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+
+						// todo - submit quiz
+
+					},
+				},
+
+				{
+					RelativePath: "/packet/:number",
+					Method:       ginhttpmethod.GET,
+					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+
+						// todo - get specific packet pdf for display
+
+					},
+				},
+
+				{
+					RelativePath: "/history/:uid",
+					Method:       ginhttpmethod.GET,
+					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+
+						// todo - get specific packet pdf for display
 
 					},
 				},
