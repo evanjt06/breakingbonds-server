@@ -144,6 +144,7 @@ func main() {
 						err = user.Set()
 						if err != nil {
 							c.JSON(500, err.Error())
+							return
 						}
 
 						c.JSON(200, "")
@@ -159,17 +160,150 @@ func main() {
 					Method:       ginhttpmethod.POST,
 					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
 
-						// todo - submit quiz
+						claims := server.ExtractJwtClaims(c)
+						uid := int64((claims["uid"]).(float64))
+						log.Println(uid)
 
+						quizNumber := c.Param("number")
+						quizNumberInt,err := strconv.Atoi(quizNumber)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						r1 := c.PostForm("Response1")
+						r2 := c.PostForm("Response2")
+						r3 := c.PostForm("Response3")
+						k1 := c.PostForm("Key1")
+						k2 := c.PostForm("Key2")
+						k3 := c.PostForm("Key3")
+						elapsedTime := c.PostForm("ElapsedTime")
+
+						if r1 == "" || r2 == "" || r3 == "" || k1 == "" || k2 == "" || k3 == "" || elapsedTime == "" {
+							c.JSON(500, "invalid input (missing)")
+							return
+						}
+
+						et, err := time.Parse("2006-01-02 15:04", elapsedTime)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						qr := internal.QuizResponses{
+							QuizID:      int64(quizNumberInt),
+							UserID:      uid,
+							Response1:   r1,
+							Response2:   r2,
+							Response3:   r3,
+							Key1:        k1,
+							Key2:        k2,
+							Key3:        k3,
+							ElapsedTime: et,
+						}
+						qr.UseDBWriterPreferred()
+						err = qr.Set()
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						c.JSON(200, "")
 					},
 				},
 
 				{
-					RelativePath: "/packet/:number",
+					RelativePath: "/quiz",
+					Method: ginhttpmethod.POST,
+					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+
+						claims := server.ExtractJwtClaims(c)
+						uid := int64((claims["uid"]).(float64))
+						log.Println(uid)
+
+						pn := c.PostForm("PacketNumber")
+						unit := c.PostForm("Unit")
+						d := c.PostForm("Difficulty") // 1easy, 2medium, 3hard
+						pdflink := c.PostForm("PDFLink")
+						timer := c.PostForm("Timer")
+
+						pn_int, err := strconv.Atoi(pn)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+						unit_int, err := strconv.Atoi(unit)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+						d_int, err := strconv.Atoi(d)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						if pn == "" || unit == "" || d == "" || pdflink == "" || timer == "" {
+							c.JSON(500, "invalid input (missing)")
+							return
+						}
+
+						t, err := time.Parse("2006-01-02 15:04", timer)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						q := internal.Quiz{
+							PacketNumber: pn_int,
+							UnitNumber:   unit_int,
+							Difficulty:   d_int,
+							PDFLink:      pdflink,
+							Timer:        t,
+							AdminID:      1,
+						}
+						q.UseDBWriterPreferred()
+						err = q.Set()
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						c.JSON(200, "")
+					},
+				},
+
+				{
+					RelativePath: "/quiz/:number",
 					Method:       ginhttpmethod.GET,
 					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
 
-						// todo - get specific packet pdf for display
+						claims := server.ExtractJwtClaims(c)
+						uid := int64((claims["uid"]).(float64))
+						log.Println(uid)
+
+						quizNumber := c.Param("number")
+						quizNumberInt, err := strconv.Atoi(quizNumber)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						q := internal.Quiz{}
+						q.UseDBWriterPreferred()
+						notFound, err := q.GetByPacketNumber(quizNumberInt)
+						if notFound {
+							c.JSON(500, "not found")
+							return
+						}
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						c.JSON(200, gin.H{
+							"quiz": q,
+						})
 
 					},
 				},

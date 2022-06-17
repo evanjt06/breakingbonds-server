@@ -57,7 +57,7 @@ import (
 type Quiz struct {
 	ID int64 `db:"ID" ggAttr:"PK-Auto,-,-,-,-,-,-,-,GetBy" ggTable:"Quiz" ggDel:"None"`
 
-	PacketNumber int       `db:"PacketNumber" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	PacketNumber int       `db:"PacketNumber" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,GetBy"`
 	UnitNumber   int       `db:"UnitNumber" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	Difficulty   int       `db:"Difficulty" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	PDFLink      string    `db:"PDFLink" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
