@@ -3,13 +3,19 @@ package main
 import (
 	"avchem-server/internal"
 	"database/sql"
+	"github.com/aldelo/common/wrapper/aws/awsregion"
 	ginw "github.com/aldelo/common/wrapper/gin"
 	"github.com/aldelo/common/wrapper/gin/ginhttpmethod"
+	"github.com/aldelo/common/wrapper/s3"
 	"github.com/aldelo/connector/webserver"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -53,6 +59,9 @@ func main() {
 	server.LoginRequestDataPtr = &internal.Credentials{}
 
 	server.LoginResponseHandler = func(c *gin.Context, statusCode int, token string, expires time.Time) {
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+		// todo : add production weburl
 		c.JSON(statusCode, gin.H{
 			"token": token,
 			"exp":   expires,
@@ -71,18 +80,27 @@ func main() {
 			}()
 
 			// authenticate user
-			uid, err := internal.ValidateCredentials(*lg)
+			uid, aid, err := internal.ValidateCredentials(*lg)
 			if err != nil {
 				log.Println(err.Error())
 				return nil
 			}
 
+			if uid == 0 {
+				return &internal.Credentials{
+					Email:    lg.Email,
+					Password: lg.Password,
+					UserID:   0,
+					AdminID:  aid,
+				}
+			}
 			return &internal.Credentials{
 				Email:    lg.Email,
 				Password: lg.Password,
 				UserID:   uid,
 				AdminID:  0,
 			}
+
 		}
 	}
 
@@ -97,6 +115,7 @@ func main() {
 		if loggedInCredentialPtr != nil {
 			return "app", map[string]interface{}{
 				"uid": ptr.UserID,
+				"aid": ptr.AdminID,
 			}
 		}
 
@@ -129,6 +148,19 @@ func main() {
 						password := c.PostForm("password")
 						if password == "" || len(password) < 8 {
 							c.JSON(500, "invalid input (PASSWORD)")
+							return
+						}
+
+						// must check if email is already in database
+						isAlreadyIn := internal.User{}
+						isAlreadyIn.UseDBWriterPreferred()
+						notFound, err := isAlreadyIn.GetByEmail(email)
+						if !notFound {
+							c.JSON(500, "email already taken")
+							return
+						}
+						if err != nil {
+							c.JSON(500, err.Error())
 							return
 						}
 
@@ -209,6 +241,56 @@ func main() {
 						}
 
 						c.JSON(200, "")
+					},
+				},
+				
+				{
+					RelativePath: "/pdfUpload", // MUST BE ADMIN
+					Method: ginhttpmethod.POST,
+					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+
+						claims := server.ExtractJwtClaims(c)
+						aid := int64((claims["aid"]).(float64))
+						if aid == 0 {
+							c.JSON(401, "Invalid permissions.")
+							return
+						}
+
+						file, err := c.FormFile("file")
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						s := s3.S3{
+							AwsRegion:  awsregion.AWS_us_west_2_oregon,
+							HttpOptions: nil,
+							BucketName: os.Getenv("BUCKET"),
+						}
+						err = s.Connect()
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+						defer s.Disconnect()
+
+						extension := filepath.Ext(file.Filename)
+						newFileName := uuid.New().String() + extension
+
+						fileContent, _ := file.Open()
+						byteContainer, err := ioutil.ReadAll(fileContent)
+
+						location, err := s.Upload(nil, byteContainer, newFileName)
+
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						// put this location into the DB
+						log.Println(location)
+
+						c.JSON(200, location)
 					},
 				},
 
@@ -309,12 +391,32 @@ func main() {
 				},
 
 				{
-					RelativePath: "/history/:uid",
+					RelativePath: "/history",
 					Method:       ginhttpmethod.GET,
 					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+						// based off of UserID
+						claims := server.ExtractJwtClaims(c)
+						uid := int64((claims["uid"]).(float64))
 
-						// todo - get specific packet pdf for display
+						quizResponseList := internal.QuizResponsesList{}
+						quizResponseList.UseDBWriterPreferred()
 
+						err = quizResponseList.GetByUserID(uid)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						if quizResponseList.List == nil {
+							c.JSON(http.StatusOK, gin.H{
+								"res": "no data found",
+							})
+							return
+						}
+
+						c.JSON(200, gin.H {
+							"res": quizResponseList,
+						})
 					},
 				},
 			},

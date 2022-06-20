@@ -57,8 +57,8 @@ import (
 type User struct {
 	ID int64 `db:"ID" ggAttr:"PK-Auto,-,-,-,-,-,-,-,GetBy" ggTable:"User" ggDel:"None"`
 
-	Email    string        `db:"Email" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,GetBy,F=Password"`
-	Password string        `db:"Password" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	Email    string        `db:"Email" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,GetBy"`
+	Password string        `db:"Password" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,GetBy,F=Email"`
 	Points   sql.NullInt32 `db:"Points" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 
 	// stores the original version of this struct, value set by Get or GetBy

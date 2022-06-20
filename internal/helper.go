@@ -25,24 +25,35 @@ type Credentials struct {
 }
 
 // for login function
-func ValidateCredentials(cred Credentials) (int64, error) {
+// first arg USER ID, second arg ADMIN ID
+func ValidateCredentials(cred Credentials) (int64, int64, error) {
 	if cred.Email == "" {
-		return 0,fmt.Errorf("Email invalid")
+		return 0,0,fmt.Errorf("Email invalid")
 	}
 	if cred.Password == "" {
-		return 0,fmt.Errorf("Password invalid")
+		return 0,0,fmt.Errorf("Password invalid")
 	}
 
-	user := User{}
-	user.UseDBWriterPreferred()
-	notFound, err := user.GetByEmail(cred.Email, cred.Password)
+	admin := Admin{}
+	admin.UseDBWriterPreferred()
+	notFound, err := admin.GetByPassword(cred.Password, cred.Email)
 	if notFound {
-		return 0,fmt.Errorf("User is nil")
+
+		// admin is null
+		user := User{}
+		user.UseDBWriterPreferred()
+		notFound, err = user.GetByPassword(cred.Password, cred.Email)
+		if notFound {
+			return 0,0,fmt.Errorf("User is nil")
+		}
+		if err != nil {
+			return 0,0,err
+		}
+		return user.ID,0, nil
 	}
 	if err != nil {
-		return 0,err
+		return 0,0,err
 	}
 
-	return user.ID, nil
-
+	return 0, admin.ID, nil
 }

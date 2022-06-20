@@ -58,7 +58,7 @@ type QuizResponses struct {
 	ID int64 `db:"ID" ggAttr:"PK-Auto,-,-,-,-,-,-,-,GetBy" ggTable:"QuizResponses" ggDel:"None"`
 
 	QuizID      int64     `db:"QuizID" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
-	UserID      int64     `db:"UserID" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	UserID      int64     `db:"UserID" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,GetBy"`
 	Response1   string    `db:"Response1" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	Response2   string    `db:"Response2" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	Response3   string    `db:"Response3" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`

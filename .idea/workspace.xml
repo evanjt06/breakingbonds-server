@@ -36,15 +36,51 @@
     <integration-enabled>true</integration-enabled>
   </component>
   <component name="WindowStateProjectService">
-    <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser" timestamp="1655444837857">
-      <screen x="0" y="23" width="1792" height="1030" />
+    <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser" timestamp="1655616865525">
+      <screen x="0" y="23" width="1792" height="1031" />
     </state>
     <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser/0.23.1792.1030@0.23.1792.1030" timestamp="1655444837857" />
-    <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser/0.23.1792.1031@0.23.1792.1031" timestamp="1655363127936" />
+    <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser/0.23.1792.1031@0.23.1792.1031" timestamp="1655616865525" />
     <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser/0.23.1792.1033@0.23.1792.1033" timestamp="1655360854696" />
     <state x="397" y="178" key="SettingsEditor" timestamp="1655358854054">
       <screen x="0" y="23" width="1792" height="1033" />
     </state>
     <state x="397" y="178" key="SettingsEditor/0.23.1792.1033@0.23.1792.1033" timestamp="1655358854054" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/app.go</url>
+          <line>358</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/app.go</url>
+          <line>393</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/app.go</url>
+          <line>297</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/app.go</url>
+          <line>190</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/app.go</url>
+          <line>132</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/app.go</url>
+          <line>247</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

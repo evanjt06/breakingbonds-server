@@ -153,20 +153,63 @@ func (r *User) GetByID(ID int64) (notFound bool, err error) {
 // and marshals found result fields into struct,
 // an error of nil indicates success
 // note: this function will have struct tag ggAttr:"9 = GetBy" for columns acting as its source
-func (r *User) GetByEmail(Email string, Password string) (notFound bool, err error) {
+func (r *User) GetByEmail(Email string) (notFound bool, err error) {
 	// clean up
 	r._originalValue = nil
 
 	// compose query
 	q := new(data.QueryBuilder)
 
-	q.Set("SELECT * FROM User WHERE Email=? AND Password=? LIMIT 1;")
+	q.Set("SELECT * FROM User WHERE Email=? LIMIT 1;")
 	q.Ordinal(Email)
+
+	// execute query
+	var dbCurrent *data.MySql
+
+	if !_UserPrefersDBReader {
+		dbCurrent = db
+	} else {
+		dbCurrent = getReaderDB()
+	}
+
+	notFound, err = dbCurrent.GetStruct(r, q.SQL(), q.ParamsSlice()...)
+	dbCurrent = nil
+
+	if err != nil {
+		// error detected
+		return false, err
+	}
+
+	if notFound {
+		// not found but not error
+		return true, nil
+	}
+
+	// store into original value
+	r._originalValue = *r
+
+	// success
+	return false, nil
+}
+
+// GetByPassword retrieves a row from database using the Password field value,
+// and marshals found result fields into struct,
+// an error of nil indicates success
+// note: this function will have struct tag ggAttr:"9 = GetBy" for columns acting as its source
+func (r *User) GetByPassword(Password string, Email string) (notFound bool, err error) {
+	// clean up
+	r._originalValue = nil
+
+	// compose query
+	q := new(data.QueryBuilder)
+
+	q.Set("SELECT * FROM User WHERE Password=? AND Email=? LIMIT 1;")
+	q.Ordinal(Password)
 
 	sqlBuf := q.SQL()
 	sqlBufUsed := false
 
-	q.Ordinal(Password)
+	q.Ordinal(Email)
 
 	if sqlBufUsed {
 		q.ClearSQL()
@@ -620,11 +663,10 @@ func (l *UserList) GetByID(IDToLoad ...int64) error {
 
 // GetByEmail will load struct slice for one or more matching values of same parameter from database
 // [ Parameters ]
-//		Password string = REQUIRED
 //		EmailToLoad = variadic, one or more table Email to load from database, for example, enter 2, 3, 6, 9, will load records with Email 2, 3, 6, and 9 from database to struct list
 // [ Notes ]
 // 		this function is based on the database column dbAttr:"GetBy" for suffix naming
-func (l *UserList) GetByEmail(Password string, EmailToLoad ...string) error {
+func (l *UserList) GetByEmail(EmailToLoad ...string) error {
 	// validate
 	if l == nil {
 		return errors.New("List Object Nil")
@@ -655,15 +697,61 @@ func (l *UserList) GetByEmail(Password string, EmailToLoad ...string) error {
 	}
 
 	if strings.Contains(filter, ",") {
-		filter = "WHERE Password=? AND Email IN (" + filter + ")"
+		filter = "WHERE Email IN (" + filter + ")"
 	} else {
-		filter = "WHERE Password=? AND Email = " + filter
+		filter = "WHERE Email = " + filter
+	}
+
+	// perform action
+	return l.getInternal(filter, "", 0, 0)
+}
+
+// GetByPassword will load struct slice for one or more matching values of same parameter from database
+// [ Parameters ]
+//		Email string = REQUIRED
+//		PasswordToLoad = variadic, one or more table Password to load from database, for example, enter 2, 3, 6, 9, will load records with Password 2, 3, 6, and 9 from database to struct list
+// [ Notes ]
+// 		this function is based on the database column dbAttr:"GetBy" for suffix naming
+func (l *UserList) GetByPassword(Email string, PasswordToLoad ...string) error {
+	// validate
+	if l == nil {
+		return errors.New("List Object Nil")
+	}
+
+	if PasswordToLoad == nil {
+		return errors.New("Get Requires One or More Filter Values (Input Nil)")
+	}
+
+	if len(PasswordToLoad) == 0 {
+		return errors.New("Get Requires One or More Filter Values (Input Count 0)")
+	}
+
+	// compose filter
+	filter := ""
+
+	for _, v := range PasswordToLoad {
+		// replace non valid char from string
+		v = util.Replace(v, "'", "")
+
+		if util.LenTrim(filter) > 0 {
+			filter += ", '"
+		} else {
+			filter = "'"
+		}
+
+		filter += v + "'"
+	}
+
+	if strings.Contains(filter, ",") {
+		filter = "WHERE Email=? AND Password IN (" + filter + ")"
+	} else {
+		filter = "WHERE Email=? AND Password = " + filter
 	}
 
 	var fOrdList []interface{}
 	fOrdList = make([]interface{}, 0)
 
-	fOrdList = append(fOrdList, Password)
+	fOrdList = append(fOrdList, Email)
 
 	// perform action
 	if len(fOrdList) == 0 {
@@ -1003,11 +1091,10 @@ func (l *UserList) FindByID(IDToFind ...int64) (foundList *[]User, err error) {
 // FindByEmail will search existing struct slice for one or more matching values of same parameter,
 // it will return a list of found objects, or error if encountered
 // [ Parameters ]
-//		Password string = REQUIRED
 //		EmailToFind = variadic, one or more table Email to find, for example, enter 2, 3, 6, 9, will find records with Email 2, 3, 6, and 9 in list
 // [ Notes ]
 //		this function is based on the database column dbAttr:"GetBy" for suffix naming
-func (l *UserList) FindByEmail(Password string, EmailToFind ...string) (foundList *[]User, err error) {
+func (l *UserList) FindByEmail(EmailToFind ...string) (foundList *[]User, err error) {
 	// validate
 	if l == nil {
 		// if not valid, then return error
@@ -1035,7 +1122,60 @@ func (l *UserList) FindByEmail(Password string, EmailToFind ...string) (foundLis
 			for _, v := range *l.List {
 				if util.LenTrim(v.Email) > 0 {
 					if util.Trim(v.Email) == util.Trim(seek) {
-						if util.Trim(v.Password) != util.Trim(Password) {
+						// found match
+						*foundList = append(*foundList, v)
+					}
+				}
+			}
+		}
+	}
+
+	// find is complete
+	if len(*foundList) == 0 {
+		// nothing is found
+		return nil, nil
+	} else {
+		// one or more results found
+		return foundList, nil
+	}
+}
+
+// FindByPassword will search existing struct slice for one or more matching values of same parameter,
+// it will return a list of found objects, or error if encountered
+// [ Parameters ]
+//		Email string = REQUIRED
+//		PasswordToFind = variadic, one or more table Password to find, for example, enter 2, 3, 6, 9, will find records with Password 2, 3, 6, and 9 in list
+// [ Notes ]
+//		this function is based on the database column dbAttr:"GetBy" for suffix naming
+func (l *UserList) FindByPassword(Email string, PasswordToFind ...string) (foundList *[]User, err error) {
+	// validate
+	if l == nil {
+		// if not valid, then return error
+		return nil, errors.New("List Object Nil")
+	}
+
+	// check if there are any objects
+	if l.Count <= 0 {
+		// return as nothing found, and its not an error
+		return nil, nil
+	}
+
+	// check parameters
+	if len(PasswordToFind) <= 0 {
+		// return as nothing found, and its not an error
+		return nil, nil
+	}
+
+	// initialize foundList
+	foundList = new([]User)
+
+	// loop thru list to match
+	for _, seek := range PasswordToFind {
+		if util.LenTrim(seek) > 0 {
+			for _, v := range *l.List {
+				if util.LenTrim(v.Password) > 0 {
+					if util.Trim(v.Password) == util.Trim(seek) {
+						if util.Trim(v.Email) != util.Trim(Email) {
 							continue
 						}
 

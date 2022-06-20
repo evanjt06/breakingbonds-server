@@ -53,7 +53,7 @@ package internal
 type Admin struct {
 	ID       int64  `db:"ID" ggAttr:"PK-Auto,-,-,-,-,-,-,-,GetBy" ggTable:"Admin" ggDel:"None"`
 	Email    string `db:"Email" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
-	Password string `db:"Password" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	Password string `db:"Password" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,GetBy,F=Email"`
 
 	// stores the original version of this struct, value set by Get or GetBy
 	_originalValue interface{} `db:"-"`

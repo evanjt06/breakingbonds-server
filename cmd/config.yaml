@@ -90,6 +90,6 @@ web_server:
   google_recaptcha_secret: ""
   ws_debug: false
   ws_name: webserver
-  ws_port: 4000
+  ws_port: 8080
   ws_server_key: ""
   ws_server_pem: ""
