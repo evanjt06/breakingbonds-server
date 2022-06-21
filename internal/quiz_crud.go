@@ -41,13 +41,19 @@ func (r Quiz) UseDBWriterPreferred() {
 //		PDFLink string = REQUIRED
 //		Timer time.Time = REQUIRED
 //		AdminID int64 = REQUIRED
-func (r *Quiz) Fill(PacketNumber int, UnitNumber int, Difficulty int, PDFLink string, Timer time.Time, AdminID int64) {
+//		Key1 string = REQUIRED
+//		Key2 string = REQUIRED
+//		Key3 string = REQUIRED
+func (r *Quiz) Fill(PacketNumber int, UnitNumber int, Difficulty int, PDFLink string, Timer time.Time, AdminID int64, Key1 string, Key2 string, Key3 string) {
 	r.PacketNumber = PacketNumber
 	r.UnitNumber = UnitNumber
 	r.Difficulty = Difficulty
 	r.PDFLink = PDFLink
 	r.Timer = Timer
 	r.AdminID = AdminID
+	r.Key1 = Key1
+	r.Key2 = Key2
+	r.Key3 = Key3
 }
 
 // GetPacketNumber retrieves struct field value,
@@ -90,6 +96,27 @@ func (r *Quiz) GetTimer() time.Time {
 // if any field data type is sql null type or pointer, then the null or pointer is converted to base type
 func (r *Quiz) GetAdminID() int64 {
 	return r.AdminID
+}
+
+// GetKey1 retrieves struct field value,
+// if any field data type is int representing enum, then the corresponding enum is returned,
+// if any field data type is sql null type or pointer, then the null or pointer is converted to base type
+func (r *Quiz) GetKey1() string {
+	return r.Key1
+}
+
+// GetKey2 retrieves struct field value,
+// if any field data type is int representing enum, then the corresponding enum is returned,
+// if any field data type is sql null type or pointer, then the null or pointer is converted to base type
+func (r *Quiz) GetKey2() string {
+	return r.Key2
+}
+
+// GetKey3 retrieves struct field value,
+// if any field data type is int representing enum, then the corresponding enum is returned,
+// if any field data type is sql null type or pointer, then the null or pointer is converted to base type
+func (r *Quiz) GetKey3() string {
+	return r.Key3
 }
 
 // SetPacketNumber sets value into struct field value and checks for data input initial validation rules,
@@ -162,6 +189,51 @@ func (r *Quiz) SetTimer(v time.Time) error {
 //		v int64 = Struct internal data type: int64; REQUIRED
 func (r *Quiz) SetAdminID(v int64) error {
 	r.AdminID = v
+
+	return nil
+}
+
+// SetKey1 sets value into struct field value and checks for data input initial validation rules,
+// if any field data type is int representing enum, then the corresponding enum is used as input parameter,
+// if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
+//		[ Parameters ]
+//		v string = Struct internal data type: string; REQUIRED
+func (r *Quiz) SetKey1(v string) error {
+	if util.LenTrim(v) == 0 {
+		return errors.New("SetKey1 Failed, A Text Length Greater Than Zero is Required")
+	}
+
+	r.Key1 = v
+
+	return nil
+}
+
+// SetKey2 sets value into struct field value and checks for data input initial validation rules,
+// if any field data type is int representing enum, then the corresponding enum is used as input parameter,
+// if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
+//		[ Parameters ]
+//		v string = Struct internal data type: string; REQUIRED
+func (r *Quiz) SetKey2(v string) error {
+	if util.LenTrim(v) == 0 {
+		return errors.New("SetKey2 Failed, A Text Length Greater Than Zero is Required")
+	}
+
+	r.Key2 = v
+
+	return nil
+}
+
+// SetKey3 sets value into struct field value and checks for data input initial validation rules,
+// if any field data type is int representing enum, then the corresponding enum is used as input parameter,
+// if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
+//		[ Parameters ]
+//		v string = Struct internal data type: string; REQUIRED
+func (r *Quiz) SetKey3(v string) error {
+	if util.LenTrim(v) == 0 {
+		return errors.New("SetKey3 Failed, A Text Length Greater Than Zero is Required")
+	}
+
+	r.Key3 = v
 
 	return nil
 }
@@ -392,6 +464,18 @@ func (r *Quiz) IsDataChanged() bool {
 		return true
 	}
 
+	if r.Key1 != old.Key1 {
+		return true
+	}
+
+	if r.Key2 != old.Key2 {
+		return true
+	}
+
+	if r.Key3 != old.Key3 {
+		return true
+	}
+
 	// no changes
 	return false
 }
@@ -424,6 +508,18 @@ func (r *Quiz) Validate() error {
 
 	if r.AdminID == 0 {
 		return errors.New("AdminID is Required")
+	}
+
+	if util.LenTrim(r.Key1) == 0 {
+		return errors.New("Key1 is Required")
+	}
+
+	if util.LenTrim(r.Key2) == 0 {
+		return errors.New("Key2 is Required")
+	}
+
+	if util.LenTrim(r.Key3) == 0 {
+		return errors.New("Key3 is Required")
 	}
 
 	// success
@@ -463,9 +559,9 @@ func (r *Quiz) Set() error {
 
 		// compose insert action query
 		q.Set("INSERT INTO Quiz ")
-		q.Set("(PacketNumber, UnitNumber, Difficulty, PDFLink, Timer, AdminID) ")
+		q.Set("(PacketNumber, UnitNumber, Difficulty, PDFLink, Timer, AdminID, Key1, Key2, Key3) ")
 		q.Set("VALUES ")
-		q.Set("(:PacketNumber, :UnitNumber, :Difficulty, :PDFLink, :Timer, :AdminID);")
+		q.Set("(:PacketNumber, :UnitNumber, :Difficulty, :PDFLink, :Timer, :AdminID, :Key1, :Key2, :Key3);")
 
 		q.Named("PacketNumber", r.PacketNumber)
 		q.Named("UnitNumber", r.UnitNumber)
@@ -473,13 +569,16 @@ func (r *Quiz) Set() error {
 		q.Named("PDFLink", r.PDFLink)
 		q.Named("Timer", r.Timer)
 		q.Named("AdminID", r.AdminID)
+		q.Named("Key1", r.Key1)
+		q.Named("Key2", r.Key2)
+		q.Named("Key3", r.Key3)
 	} else {
 		// update
 		isNewRow = false
 
 		// compose update action query
 		q.Set("UPDATE Quiz ")
-		q.Set("SET PacketNumber=:PacketNumber, UnitNumber=:UnitNumber, Difficulty=:Difficulty, PDFLink=:PDFLink, Timer=:Timer, AdminID=:AdminID ")
+		q.Set("SET PacketNumber=:PacketNumber, UnitNumber=:UnitNumber, Difficulty=:Difficulty, PDFLink=:PDFLink, Timer=:Timer, AdminID=:AdminID, Key1=:Key1, Key2=:Key2, Key3=:Key3 ")
 		q.Set("WHERE ID=:ID;")
 
 		q.Named("ID", r.ID)
@@ -489,6 +588,9 @@ func (r *Quiz) Set() error {
 		q.Named("PDFLink", r.PDFLink)
 		q.Named("Timer", r.Timer)
 		q.Named("AdminID", r.AdminID)
+		q.Named("Key1", r.Key1)
+		q.Named("Key2", r.Key2)
+		q.Named("Key3", r.Key3)
 	}
 
 	// begin transaction

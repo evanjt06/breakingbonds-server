@@ -3,6 +3,7 @@ package main
 import (
 	"avchem-server/internal"
 	"database/sql"
+	"fmt"
 	"github.com/aldelo/common/wrapper/aws/awsregion"
 	ginw "github.com/aldelo/common/wrapper/gin"
 	"github.com/aldelo/common/wrapper/gin/ginhttpmethod"
@@ -17,6 +18,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -206,17 +208,14 @@ func main() {
 						r1 := c.PostForm("Response1")
 						r2 := c.PostForm("Response2")
 						r3 := c.PostForm("Response3")
-						k1 := c.PostForm("Key1")
-						k2 := c.PostForm("Key2")
-						k3 := c.PostForm("Key3")
 						elapsedTime := c.PostForm("ElapsedTime")
 
-						if r1 == "" || r2 == "" || r3 == "" || k1 == "" || k2 == "" || k3 == "" || elapsedTime == "" {
+						if r1 == "" || r2 == "" || r3 == "" || elapsedTime == "" {
 							c.JSON(500, "invalid input (missing)")
 							return
 						}
 
-						et, err := time.Parse("2006-01-02 15:04", elapsedTime)
+						et, err := time.Parse("2006-01-02 15:04:05", elapsedTime)
 						if err != nil {
 							c.JSON(500, err.Error())
 							return
@@ -228,9 +227,6 @@ func main() {
 							Response1:   r1,
 							Response2:   r2,
 							Response3:   r3,
-							Key1:        k1,
-							Key2:        k2,
-							Key3:        k3,
 							ElapsedTime: et,
 						}
 						qr.UseDBWriterPreferred()
@@ -240,21 +236,56 @@ func main() {
 							return
 						}
 
-						c.JSON(200, "")
-					},
-				},
-				
-				{
-					RelativePath: "/pdfUpload", // MUST BE ADMIN
-					Method: ginhttpmethod.POST,
-					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
-
-						claims := server.ExtractJwtClaims(c)
-						aid := int64((claims["aid"]).(float64))
-						if aid == 0 {
-							c.JSON(401, "Invalid permissions.")
+						// now check the answers with the Quiz table
+						l := internal.Quiz{}
+						l.UseDBWriterPreferred()
+						notFound, err := l.GetByID(int64(quizNumberInt))
+						if notFound {
+							c.JSON(500, "quiz not found")
 							return
 						}
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+						correct1 := false
+						correct2 := false
+						correct3 := false
+
+						if  strings.ToLower(qr.Key1) ==  strings.ToLower(l.Key1) {
+							correct1 = true
+						}
+						if  strings.ToLower(qr.Key2) ==  strings.ToLower(l.Key2) {
+							correct2 = true
+						}
+						if  strings.ToLower(qr.Key3) ==  strings.ToLower(l.Key3) {
+							correct3 = true
+						}
+
+						buffer := 0
+						if correct1 == true {
+							buffer += 1
+						}
+						if correct2 == true {
+							buffer += 1
+						}
+						if correct3 == true {
+							buffer += 1
+						}
+
+						c.JSON(200, gin.H {
+							"response1": correct1,
+							"response2": correct2,
+							"response3": correct3,
+							"percentage": fmt.Sprintf("%.1f\n",(float64(buffer)/float64(3)) * 100),
+						})
+					},
+				},
+
+				{
+					RelativePath: "/quiz",
+					Method: ginhttpmethod.POST,
+					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
 
 						file, err := c.FormFile("file")
 						if err != nil {
@@ -290,24 +321,14 @@ func main() {
 						// put this location into the DB
 						log.Println(location)
 
-						c.JSON(200, location)
-					},
-				},
-
-				{
-					RelativePath: "/quiz",
-					Method: ginhttpmethod.POST,
-					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
-
-						claims := server.ExtractJwtClaims(c)
-						uid := int64((claims["uid"]).(float64))
-						log.Println(uid)
-
 						pn := c.PostForm("PacketNumber")
 						unit := c.PostForm("Unit")
 						d := c.PostForm("Difficulty") // 1easy, 2medium, 3hard
-						pdflink := c.PostForm("PDFLink")
+						pdflink := location
 						timer := c.PostForm("Timer")
+						key1 := c.PostForm("Key1")
+						key2 := c.PostForm("Key2")
+						key3 := c.PostForm("Key3")
 
 						pn_int, err := strconv.Atoi(pn)
 						if err != nil {
@@ -325,12 +346,12 @@ func main() {
 							return
 						}
 
-						if pn == "" || unit == "" || d == "" || pdflink == "" || timer == "" {
+						if pn == "" || unit == "" || d == "" || pdflink == "" || timer == "" || key1 == "" || key2 == "" || key3 == "" {
 							c.JSON(500, "invalid input (missing)")
 							return
 						}
 
-						t, err := time.Parse("2006-01-02 15:04", timer)
+						t, err := time.Parse("2006-01-02 15:04:05", timer)
 						if err != nil {
 							c.JSON(500, err.Error())
 							return
@@ -343,6 +364,9 @@ func main() {
 							PDFLink:      pdflink,
 							Timer:        t,
 							AdminID:      1,
+							Key1: key1,
+							Key2: key2,
+							Key3: key3,
 						}
 						q.UseDBWriterPreferred()
 						err = q.Set()

@@ -28,6 +28,72 @@
     <property name="last_opened_file_path" value="$USER_HOME$" />
     <property name="settings.editor.selected.configurable" value="go.vgo" />
   </component>
+  <component name="RunManager" selected="Go Test.TestTest in avchem-server (1)">
+    <configuration name="TestTest in avchem-server (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="avchem-server" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="avchem-server" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestTest\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestTest in avchem-server (3)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="avchem-server" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="avchem-server" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestTest\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestTest in avchem-server (4)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="avchem-server" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="avchem-server" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestTest\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestTest in avchem-server (5)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="avchem-server" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="avchem-server" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestTest\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestTest in avchem-server" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="avchem-server" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="avchem-server" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestTest\E$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.TestTest in avchem-server (1)" />
+        <item itemvalue="Go Test.TestTest in avchem-server" />
+        <item itemvalue="Go Test.TestTest in avchem-server (5)" />
+        <item itemvalue="Go Test.TestTest in avchem-server (4)" />
+        <item itemvalue="Go Test.TestTest in avchem-server (3)" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
@@ -42,6 +108,38 @@
     <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser/0.23.1792.1030@0.23.1792.1030" timestamp="1655444837857" />
     <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser/0.23.1792.1031@0.23.1792.1031" timestamp="1655616865525" />
     <state x="494" y="249" key="#com.intellij.ide.util.MemberChooser/0.23.1792.1033@0.23.1792.1033" timestamp="1655360854696" />
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom" timestamp="1655794351212">
+      <screen x="0" y="23" width="1792" height="1037" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1031@0.23.1792.1031" timestamp="1655773457717" />
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1033@0.23.1792.1033" timestamp="1655772508108" />
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1036@0.23.1792.1036" timestamp="1655780905069" />
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1037@0.23.1792.1037" timestamp="1655794351212" />
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1041@0.23.1792.1041" timestamp="1655781842794" />
+    <state width="1750" height="275" key="GridCell.Tab.0.center" timestamp="1655794351211">
+      <screen x="0" y="23" width="1792" height="1037" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1031@0.23.1792.1031" timestamp="1655773457717" />
+    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1033@0.23.1792.1033" timestamp="1655772508107" />
+    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1036@0.23.1792.1036" timestamp="1655780905068" />
+    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1037@0.23.1792.1037" timestamp="1655794351211" />
+    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1041@0.23.1792.1041" timestamp="1655781842793" />
+    <state width="1750" height="275" key="GridCell.Tab.0.left" timestamp="1655794351210">
+      <screen x="0" y="23" width="1792" height="1037" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1031@0.23.1792.1031" timestamp="1655773457716" />
+    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1033@0.23.1792.1033" timestamp="1655772508107" />
+    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1036@0.23.1792.1036" timestamp="1655780905067" />
+    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1037@0.23.1792.1037" timestamp="1655794351210" />
+    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1041@0.23.1792.1041" timestamp="1655781842793" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right" timestamp="1655794351212">
+      <screen x="0" y="23" width="1792" height="1037" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1031@0.23.1792.1031" timestamp="1655773457717" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1033@0.23.1792.1033" timestamp="1655772508107" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1036@0.23.1792.1036" timestamp="1655780905068" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1037@0.23.1792.1037" timestamp="1655794351212" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1041@0.23.1792.1041" timestamp="1655781842793" />
     <state x="397" y="178" key="SettingsEditor" timestamp="1655358854054">
       <screen x="0" y="23" width="1792" height="1033" />
     </state>
@@ -52,33 +150,28 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/app.go</url>
-          <line>358</line>
+          <line>382</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/app.go</url>
-          <line>393</line>
+          <line>417</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/app.go</url>
-          <line>297</line>
+          <line>285</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/app.go</url>
-          <line>190</line>
+          <line>192</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/app.go</url>
-          <line>132</line>
+          <line>134</line>
           <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/cmd/app.go</url>
-          <line>247</line>
-          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

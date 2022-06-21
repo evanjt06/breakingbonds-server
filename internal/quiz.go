@@ -63,6 +63,9 @@ type Quiz struct {
 	PDFLink      string    `db:"PDFLink" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	Timer        time.Time `db:"Timer" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	AdminID      int64     `db:"AdminID" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	Key1      string     `db:"Key1" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	Key2      string     `db:"Key2" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	Key3      string     `db:"Key3" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 
 	// stores the original version of this struct, value set by Get or GetBy
 	_originalValue interface{} `db:"-"`
