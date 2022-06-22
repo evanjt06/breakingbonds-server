@@ -3,6 +3,7 @@ package internal
 //go:generate gen-mysqlcrud -type QuizResponses
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -62,10 +63,8 @@ type QuizResponses struct {
 	Response1   string    `db:"Response1" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	Response2   string    `db:"Response2" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	Response3   string    `db:"Response3" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
-	Key1        string    `db:"Key1" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
-	Key2        string    `db:"Key2" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
-	Key3        string    `db:"Key3" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 	ElapsedTime time.Time `db:"ElapsedTime" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
+	Percentage sql.NullString `db:"Percentage" ggAttr:"-,-,-,-,-,Set-InsUpd,Check,Fill,-"`
 
 	// stores the original version of this struct, value set by Get or GetBy
 	_originalValue interface{} `db:"-"`

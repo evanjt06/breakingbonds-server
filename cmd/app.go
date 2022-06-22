@@ -4,6 +4,7 @@ import (
 	"avchem-server/internal"
 	"database/sql"
 	"fmt"
+	common "github.com/aldelo/common"
 	"github.com/aldelo/common/wrapper/aws/awsregion"
 	ginw "github.com/aldelo/common/wrapper/gin"
 	"github.com/aldelo/common/wrapper/gin/ginhttpmethod"
@@ -188,6 +189,82 @@ func main() {
 		},
 		"auth": {
 			Routes: []*ginw.Route{
+				{
+					RelativePath: "/scores",
+					Method: ginhttpmethod.GET,
+					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+						claims := server.ExtractJwtClaims(c)
+						uid := int64((claims["uid"]).(float64))
+
+						// return list of 15 quizzes with percentage ..
+						// -1 not started, 0 -> 0%, 1 -> 33%, 2 -> 66%, 3 -> 100%
+						vals := make([]string, 15)
+						for i := 0; i < len(vals); i++ {
+							vals[i] = "Not started"
+						}
+
+						quizResponseList := internal.QuizResponsesList{}
+						quizResponseList.UseDBWriterPreferred()
+
+						err = quizResponseList.GetByUserID(uid)
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						for i := 0; i < quizResponseList.Count; i++ {
+							qr, err := quizResponseList.Element(i)
+							if err != nil {
+								c.JSON(500, err.Error())
+								return
+							}
+
+							quiz := internal.Quiz{}
+							quiz.UseDBWriterPreferred()
+							notFound, err := quiz.GetByID(qr.QuizID)
+							if notFound {
+								c.JSON(500, "quiz not found 227")
+								return
+							}
+							if err != nil {
+								c.JSON(500, err.Error())
+								return
+							}
+
+							if qr.Percentage.String != "" && qr.Percentage.Valid {
+								vals[quiz.PacketNumber - 1] = qr.Percentage.String
+							}
+						}
+
+						c.JSON(200, gin.H{
+							"results": vals,
+						})
+
+					},
+				},
+
+				{
+					RelativePath: "/points",
+					Method: ginhttpmethod.GET,
+					Handler: func(c *gin.Context, bindingInputPtr interface{}) {
+						claims := server.ExtractJwtClaims(c)
+						uid := int64((claims["uid"]).(float64))
+						u := internal.User{}
+						u.UseDBWriterPreferred()
+						notFound, err := u.GetByID(uid)
+						if notFound {
+							c.JSON(500, "user not found")
+							return
+						}
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+						c.JSON(200, gin.H{
+							"points": u.Points.Int32,
+						})
+					},
+				},
 
 				{
 					RelativePath: "/submitQuiz/:number",
@@ -196,7 +273,6 @@ func main() {
 
 						claims := server.ExtractJwtClaims(c)
 						uid := int64((claims["uid"]).(float64))
-						log.Println(uid)
 
 						quizNumber := c.Param("number")
 						quizNumberInt,err := strconv.Atoi(quizNumber)
@@ -221,8 +297,21 @@ func main() {
 							return
 						}
 
+						// GET BY PACKETNUMBER
+						sampQuiz := internal.Quiz{}
+						sampQuiz.UseDBWriterPreferred()
+						notFound, err := sampQuiz.GetByPacketNumber(quizNumberInt)
+						if notFound {
+							c.JSON(500, "quiz not found 229")
+							return
+						}
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
 						qr := internal.QuizResponses{
-							QuizID:      int64(quizNumberInt),
+							QuizID:      sampQuiz.ID,
 							UserID:      uid,
 							Response1:   r1,
 							Response2:   r2,
@@ -230,18 +319,13 @@ func main() {
 							ElapsedTime: et,
 						}
 						qr.UseDBWriterPreferred()
-						err = qr.Set()
-						if err != nil {
-							c.JSON(500, err.Error())
-							return
-						}
 
 						// now check the answers with the Quiz table
 						l := internal.Quiz{}
 						l.UseDBWriterPreferred()
-						notFound, err := l.GetByID(int64(quizNumberInt))
+						notFound, err = l.GetByID(int64(sampQuiz.ID))
 						if notFound {
-							c.JSON(500, "quiz not found")
+							c.JSON(500, "quiz not found 257")
 							return
 						}
 						if err != nil {
@@ -252,13 +336,13 @@ func main() {
 						correct2 := false
 						correct3 := false
 
-						if  strings.ToLower(qr.Key1) ==  strings.ToLower(l.Key1) {
+						if  strings.ToLower(r1)  ==  strings.ToLower(l.Key1) {
 							correct1 = true
 						}
-						if  strings.ToLower(qr.Key2) ==  strings.ToLower(l.Key2) {
+						if  strings.ToLower(r2) ==  strings.ToLower(l.Key2) {
 							correct2 = true
 						}
-						if  strings.ToLower(qr.Key3) ==  strings.ToLower(l.Key3) {
+						if  strings.ToLower(r3) ==  strings.ToLower(l.Key3) {
 							correct3 = true
 						}
 
@@ -273,11 +357,56 @@ func main() {
 							buffer += 1
 						}
 
+						qr.Percentage = common.ToNullString(fmt.Sprintf("%.1f",(float64(buffer)/float64(3)) * 100), true)
+						err = qr.Set()
+						if err != nil {
+							c.JSON(500, err.Error())
+							return
+						}
+
+						// set the points now
+						if buffer == 3 {
+							diff := l.Difficulty
+
+							u := internal.User{}
+							u.UseDBWriterPreferred()
+							notFound, err := u.GetByID(uid)
+							if notFound {
+								c.JSON(500, "user not found")
+								return
+							}
+							if err != nil {
+								c.JSON(500, err.Error())
+								return
+							}
+
+							// ez
+							if diff == 1 {
+								u.Points.Int32 += 1
+							}
+
+							// mid
+							if diff == 2 {
+								u.Points.Int32 += 3
+							}
+
+							// hard
+							if diff == 3 {
+								u.Points.Int32 += 5
+							}
+
+							err = u.Set()
+							if err != nil {
+								c.JSON(500, err.Error())
+								return
+							}
+						}
+
 						c.JSON(200, gin.H {
 							"response1": correct1,
 							"response2": correct2,
 							"response3": correct3,
-							"percentage": fmt.Sprintf("%.1f\n",(float64(buffer)/float64(3)) * 100),
+							"percentage": fmt.Sprintf("%.1f",(float64(buffer)/float64(3)) * 100),
 						})
 					},
 				},

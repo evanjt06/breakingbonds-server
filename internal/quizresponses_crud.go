@@ -3,6 +3,7 @@
 package internal
 
 import (
+	"database/sql"
 	"errors"
 	util "github.com/aldelo/common"
 	data "github.com/aldelo/common/wrapper/mysql"
@@ -40,20 +41,16 @@ func (r QuizResponses) UseDBWriterPreferred() {
 //		Response1 string = REQUIRED
 //		Response2 string = REQUIRED
 //		Response3 string = REQUIRED
-//		Key1 string = REQUIRED
-//		Key2 string = REQUIRED
-//		Key3 string = REQUIRED
 //		ElapsedTime time.Time = REQUIRED
-func (r *QuizResponses) Fill(QuizID int64, UserID int64, Response1 string, Response2 string, Response3 string, Key1 string, Key2 string, Key3 string, ElapsedTime time.Time) {
+//		Percentage sql.NullString = REQUIRED
+func (r *QuizResponses) Fill(QuizID int64, UserID int64, Response1 string, Response2 string, Response3 string, ElapsedTime time.Time, Percentage sql.NullString) {
 	r.QuizID = QuizID
 	r.UserID = UserID
 	r.Response1 = Response1
 	r.Response2 = Response2
 	r.Response3 = Response3
-	r.Key1 = Key1
-	r.Key2 = Key2
-	r.Key3 = Key3
 	r.ElapsedTime = ElapsedTime
+	r.Percentage = Percentage
 }
 
 // GetQuizID retrieves struct field value,
@@ -91,32 +88,18 @@ func (r *QuizResponses) GetResponse3() string {
 	return r.Response3
 }
 
-// GetKey1 retrieves struct field value,
-// if any field data type is int representing enum, then the corresponding enum is returned,
-// if any field data type is sql null type or pointer, then the null or pointer is converted to base type
-func (r *QuizResponses) GetKey1() string {
-	return r.Key1
-}
-
-// GetKey2 retrieves struct field value,
-// if any field data type is int representing enum, then the corresponding enum is returned,
-// if any field data type is sql null type or pointer, then the null or pointer is converted to base type
-func (r *QuizResponses) GetKey2() string {
-	return r.Key2
-}
-
-// GetKey3 retrieves struct field value,
-// if any field data type is int representing enum, then the corresponding enum is returned,
-// if any field data type is sql null type or pointer, then the null or pointer is converted to base type
-func (r *QuizResponses) GetKey3() string {
-	return r.Key3
-}
-
 // GetElapsedTime retrieves struct field value,
 // if any field data type is int representing enum, then the corresponding enum is returned,
 // if any field data type is sql null type or pointer, then the null or pointer is converted to base type
 func (r *QuizResponses) GetElapsedTime() time.Time {
 	return r.ElapsedTime
+}
+
+// GetPercentage retrieves struct field value,
+// if any field data type is int representing enum, then the corresponding enum is returned,
+// if any field data type is sql null type or pointer, then the null or pointer is converted to base type
+func (r *QuizResponses) GetPercentage() string {
+	return util.FromNullString(r.Percentage)
 }
 
 // SetQuizID sets value into struct field value and checks for data input initial validation rules,
@@ -186,51 +169,6 @@ func (r *QuizResponses) SetResponse3(v string) error {
 	return nil
 }
 
-// SetKey1 sets value into struct field value and checks for data input initial validation rules,
-// if any field data type is int representing enum, then the corresponding enum is used as input parameter,
-// if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
-//		[ Parameters ]
-//		v string = Struct internal data type: string; REQUIRED
-func (r *QuizResponses) SetKey1(v string) error {
-	if util.LenTrim(v) == 0 {
-		return errors.New("SetKey1 Failed, A Text Length Greater Than Zero is Required")
-	}
-
-	r.Key1 = v
-
-	return nil
-}
-
-// SetKey2 sets value into struct field value and checks for data input initial validation rules,
-// if any field data type is int representing enum, then the corresponding enum is used as input parameter,
-// if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
-//		[ Parameters ]
-//		v string = Struct internal data type: string; REQUIRED
-func (r *QuizResponses) SetKey2(v string) error {
-	if util.LenTrim(v) == 0 {
-		return errors.New("SetKey2 Failed, A Text Length Greater Than Zero is Required")
-	}
-
-	r.Key2 = v
-
-	return nil
-}
-
-// SetKey3 sets value into struct field value and checks for data input initial validation rules,
-// if any field data type is int representing enum, then the corresponding enum is used as input parameter,
-// if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
-//		[ Parameters ]
-//		v string = Struct internal data type: string; REQUIRED
-func (r *QuizResponses) SetKey3(v string) error {
-	if util.LenTrim(v) == 0 {
-		return errors.New("SetKey3 Failed, A Text Length Greater Than Zero is Required")
-	}
-
-	r.Key3 = v
-
-	return nil
-}
-
 // SetElapsedTime sets value into struct field value and checks for data input initial validation rules,
 // if any field data type is int representing enum, then the corresponding enum is used as input parameter,
 // if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
@@ -242,6 +180,21 @@ func (r *QuizResponses) SetElapsedTime(v time.Time) error {
 	}
 
 	r.ElapsedTime = v
+
+	return nil
+}
+
+// SetPercentage sets value into struct field value and checks for data input initial validation rules,
+// if any field data type is int representing enum, then the corresponding enum is used as input parameter,
+// if any field data type is sql null type or pointer, then the base type is used as parameter and converted into null or pointer
+//		[ Parameters ]
+//		v string = Struct internal data type: sql.NullString; REQUIRED
+func (r *QuizResponses) SetPercentage(v string) error {
+	if util.LenTrim(v) == 0 {
+		return errors.New("SetPercentage Failed, A Text Length Greater Than Zero is Required")
+	}
+
+	r.Percentage = util.ToNullString(v, true)
 
 	return nil
 }
@@ -468,19 +421,11 @@ func (r *QuizResponses) IsDataChanged() bool {
 		return true
 	}
 
-	if r.Key1 != old.Key1 {
-		return true
-	}
-
-	if r.Key2 != old.Key2 {
-		return true
-	}
-
-	if r.Key3 != old.Key3 {
-		return true
-	}
-
 	if r.ElapsedTime != old.ElapsedTime {
+		return true
+	}
+
+	if r.Percentage != old.Percentage {
 		return true
 	}
 
@@ -514,20 +459,12 @@ func (r *QuizResponses) Validate() error {
 		return errors.New("Response3 is Required")
 	}
 
-	if util.LenTrim(r.Key1) == 0 {
-		return errors.New("Key1 is Required")
-	}
-
-	if util.LenTrim(r.Key2) == 0 {
-		return errors.New("Key2 is Required")
-	}
-
-	if util.LenTrim(r.Key3) == 0 {
-		return errors.New("Key3 is Required")
-	}
-
 	if r.ElapsedTime.IsZero() {
 		return errors.New("ElapsedTime is Required")
+	}
+
+	if !r.Percentage.Valid {
+		return errors.New("Percentage is Required")
 	}
 
 	// success
@@ -567,26 +504,24 @@ func (r *QuizResponses) Set() error {
 
 		// compose insert action query
 		q.Set("INSERT INTO QuizResponses ")
-		q.Set("(QuizID, UserID, Response1, Response2, Response3, Key1, Key2, Key3, ElapsedTime) ")
+		q.Set("(QuizID, UserID, Response1, Response2, Response3, ElapsedTime, Percentage) ")
 		q.Set("VALUES ")
-		q.Set("(:QuizID, :UserID, :Response1, :Response2, :Response3, :Key1, :Key2, :Key3, :ElapsedTime);")
+		q.Set("(:QuizID, :UserID, :Response1, :Response2, :Response3, :ElapsedTime, :Percentage);")
 
 		q.Named("QuizID", r.QuizID)
 		q.Named("UserID", r.UserID)
 		q.Named("Response1", r.Response1)
 		q.Named("Response2", r.Response2)
 		q.Named("Response3", r.Response3)
-		q.Named("Key1", r.Key1)
-		q.Named("Key2", r.Key2)
-		q.Named("Key3", r.Key3)
 		q.Named("ElapsedTime", r.ElapsedTime)
+		q.Named("Percentage", r.Percentage)
 	} else {
 		// update
 		isNewRow = false
 
 		// compose update action query
 		q.Set("UPDATE QuizResponses ")
-		q.Set("SET QuizID=:QuizID, UserID=:UserID, Response1=:Response1, Response2=:Response2, Response3=:Response3, Key1=:Key1, Key2=:Key2, Key3=:Key3, ElapsedTime=:ElapsedTime ")
+		q.Set("SET QuizID=:QuizID, UserID=:UserID, Response1=:Response1, Response2=:Response2, Response3=:Response3, ElapsedTime=:ElapsedTime, Percentage=:Percentage ")
 		q.Set("WHERE ID=:ID;")
 
 		q.Named("ID", r.ID)
@@ -595,10 +530,8 @@ func (r *QuizResponses) Set() error {
 		q.Named("Response1", r.Response1)
 		q.Named("Response2", r.Response2)
 		q.Named("Response3", r.Response3)
-		q.Named("Key1", r.Key1)
-		q.Named("Key2", r.Key2)
-		q.Named("Key3", r.Key3)
 		q.Named("ElapsedTime", r.ElapsedTime)
+		q.Named("Percentage", r.Percentage)
 	}
 
 	// begin transaction
