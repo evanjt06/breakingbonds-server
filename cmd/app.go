@@ -63,8 +63,8 @@ func main() {
 
 	server.LoginResponseHandler = func(c *gin.Context, statusCode int, token string, expires time.Time) {
 		c.Header("Access-Control-Allow-Credentials", "true")
-		c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
-		// todo : add production weburl
+		c.Header("Access-Control-Allow-Origin", "*")
+
 		c.JSON(statusCode, gin.H{
 			"token": token,
 			"exp":   expires,
