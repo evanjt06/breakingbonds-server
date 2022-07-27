@@ -154,11 +154,14 @@ func main() {
 							return
 						}
 
+						fmt.Println(email, password)
+
 						// must check if email is already in database
 						isAlreadyIn := internal.User{}
 						isAlreadyIn.UseDBWriterPreferred()
 						notFound, err := isAlreadyIn.GetByEmail(email)
 						if !notFound {
+							fmt.Println(164)
 							c.JSON(500, "email already taken")
 							return
 						}
@@ -166,6 +169,8 @@ func main() {
 							c.JSON(500, err.Error())
 							return
 						}
+
+						fmt.Println(172)
 
 						user := internal.User{
 							Email:    email,
